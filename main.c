@@ -98,8 +98,14 @@ void inserir(ptr *listaVoo)
     scanf("%d", (int *)&temp->status);
     getchar();
 
-    temp->link = *listaVoo;
-    *listaVoo = temp;
+    if(temp->link != NULL){
+        temp->link = *listaVoo;
+        *listaVoo = temp;
+    } else{
+        temp->link = NULL;
+        *listaVoo = temp;
+    }
+    
 
     printf("O voo %d foi adicionado\n\n", temp->numeroVoo);
 }
