@@ -151,6 +151,86 @@ int excluir(ptr *listaVoo)
     return vooSelecionado;
 }
 
+int alterar(ptr *listaVoo)
+{
+    if (*listaVoo == NULL)
+    {
+        printf("A lista está vazia, não é possivel alterar um voo");
+        return -1;
+    }
+
+    int vooSelecionado;
+    printf("Digite o número do voo a ser alterado\n");
+    scanf("%d", &vooSelecionado);
+
+    ptr atual = *listaVoo;
+
+    while (atual != NULL && atual->numeroVoo != vooSelecionado)
+    {
+        atual = atual->link;
+    }
+
+    if (atual == NULL)
+    {
+        printf("Voo não encontrado.\n");
+        return -1;
+    }
+
+    int opcao;
+
+    do
+    {
+        printf("\nAlteração - Menu\n");
+        printf("1 - Alterar n° do voo\n");
+        printf("2 - Alterar companhia do voo\n");
+        printf("3 - Alterar destino do voo\n");
+        printf("4 - Alterar portão do voo\n");
+        printf("5 - Alterar horário do voo\n");
+        printf("0 - Terminar alterações\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar();
+
+        switch (opcao)
+        {
+        case 1:
+            printf("\n\nInsira o número do voo em esquema de 4 casas 0000\n");
+            scanf("%d", &atual->numeroVoo);
+            getchar();
+            break;
+        case 2:
+            printf("Insira a companhia aérea\n");
+            fgets(atual->companhia, sizeof(atual->companhia), stdin);
+            removerNovaLinha(atual->companhia);
+            break;
+        case 3:
+            printf("Insira o destino do voo\n");
+            fgets(atual->destino, sizeof(atual->destino), stdin);
+            removerNovaLinha(atual->destino);
+            break;
+        case 4:
+            printf("Insira o portão do voo em 2 casas 00\n");
+            scanf("%d", &atual->portao);
+            getchar();
+            break;
+        case 5:
+            printf("Insira a hora do voo aperte enter, e então digite o minuto do voo\n");
+            scanf("%d", &atual->horario.hora);
+            scanf("%d", &atual->horario.minuto);
+            getchar();
+            break;
+        case 0:
+            printf("Saindo...\n");
+            break;
+        default:
+            printf("Opção inválida!\n");
+        }
+    } while (opcao != 0);
+
+    printf("O voo %d foi alterado\n", vooSelecionado);
+    return vooSelecionado;
+}
+
 void exibir(ptr listaVoo)
 {
     printf("\n\n=========================== PAINEL DE VOO AEROPORTO VMPERG ===========================\n");
@@ -183,8 +263,9 @@ int main()
     {
         printf("\nPainel de Voo - Menu\n");
         printf("1 - Inserir voo\n");
-        printf("2 - Excluir voo\n");
-        printf("3 - Exibir painel\n");
+        printf("2 - Alterar voo\n");
+        printf("3 - Excluir voo\n");
+        printf("4 - Exibir painel\n");
         printf("0 - Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
@@ -196,9 +277,12 @@ int main()
             inserir(&listaVoo);
             break;
         case 2:
-            excluir(&listaVoo);
+            alterar(&listaVoo);
             break;
         case 3:
+            excluir(&listaVoo);
+            break;
+        case 4:
             exibir(listaVoo);
             break;
         case 0:
