@@ -98,57 +98,10 @@ void inserir(ptr *listaVoo)
     scanf("%d", (int *)&temp->status);
     getchar();
 
-    if(temp->link != NULL){
-        temp->link = *listaVoo;
-        *listaVoo = temp;
-    } else{
-        temp->link = NULL;
-        *listaVoo = temp;
-    }
-    
+    temp->link = *listaVoo;
+    *listaVoo = temp;
 
     printf("O voo %d foi adicionado\n\n", temp->numeroVoo);
-}
-
-int excluir(ptr *listaVoo)
-{
-    if (*listaVoo == NULL)
-    {
-        printf("A lista está vazia, não é possivel excluir um voo");
-        return -1;
-    }
-
-    int vooSelecionado;
-    printf("Digite o número do voo a ser excluído\n");
-    scanf("%d", &vooSelecionado);
-
-    ptr atual = *listaVoo;
-    ptr anterior = NULL;
-
-    while (atual != NULL && atual->numeroVoo != vooSelecionado)
-    {
-        anterior = atual;
-        atual = atual->link;
-    }
-
-    if (atual == NULL)
-    {
-        printf("Voo não encontrado.\n");
-        return -1;
-    }
-
-    if (anterior == NULL)
-    {
-        *listaVoo = atual->link;
-    }
-    else
-    {
-        anterior->link = atual->link;
-    }
-
-    free(atual);
-    printf("O voo %d foi removido\n", vooSelecionado);
-    return vooSelecionado;
 }
 
 int alterar(ptr *listaVoo)
@@ -231,6 +184,81 @@ int alterar(ptr *listaVoo)
     return vooSelecionado;
 }
 
+int alterarStatus(ptr *listaVoo)
+{
+    if (*listaVoo == NULL)
+    {
+        printf("A lista está vazia, não é possivel alterar o status de um voo");
+        return -1;
+    }
+
+    int vooSelecionado;
+    printf("Digite o número do voo a ser alterado o status\n");
+    scanf("%d", &vooSelecionado);
+
+    ptr atual = *listaVoo;
+
+    while (atual != NULL && atual->numeroVoo != vooSelecionado)
+    {
+        atual = atual->link;
+    }
+
+    if (atual == NULL)
+    {
+        printf("Voo não encontrado.\n");
+        return -1;
+    }
+
+    printf("Insira o número equivalente do status do voo de acordo com a seguinte lista:\n");
+    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
+    scanf("%d", (int *)&atual->status);
+    getchar();
+
+    printf("O status do voo %d foi alterado\n", vooSelecionado);
+    return vooSelecionado;
+}
+
+int excluir(ptr *listaVoo)
+{
+    if (*listaVoo == NULL)
+    {
+        printf("A lista está vazia, não é possivel excluir um voo");
+        return -1;
+    }
+
+    int vooSelecionado;
+    printf("Digite o número do voo a ser excluído\n");
+    scanf("%d", &vooSelecionado);
+
+    ptr atual = *listaVoo;
+    ptr anterior = NULL;
+
+    while (atual != NULL && atual->numeroVoo != vooSelecionado)
+    {
+        anterior = atual;
+        atual = atual->link;
+    }
+
+    if (atual == NULL)
+    {
+        printf("Voo não encontrado.\n");
+        return -1;
+    }
+
+    if (anterior == NULL)
+    {
+        *listaVoo = atual->link;
+    }
+    else
+    {
+        anterior->link = atual->link;
+    }
+
+    free(atual);
+    printf("O voo %d foi removido\n", vooSelecionado);
+    return vooSelecionado;
+}
+
 void exibir(ptr listaVoo)
 {
     printf("\n\n=========================== PAINEL DE VOO AEROPORTO VMPERG ===========================\n");
@@ -264,8 +292,9 @@ int main()
         printf("\nPainel de Voo - Menu\n");
         printf("1 - Inserir voo\n");
         printf("2 - Alterar voo\n");
-        printf("3 - Excluir voo\n");
-        printf("4 - Exibir painel\n");
+        printf("3 - Alterar status do voo\n");
+        printf("4 - Excluir voo\n");
+        printf("5 - Exibir painel\n");
         printf("0 - Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
@@ -280,9 +309,12 @@ int main()
             alterar(&listaVoo);
             break;
         case 3:
-            excluir(&listaVoo);
+            alterarStatus(&listaVoo);
             break;
         case 4:
+            excluir(&listaVoo);
+            break;
+        case 5:
             exibir(listaVoo);
             break;
         case 0:
