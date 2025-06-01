@@ -98,8 +98,22 @@ void inserir(ptr *listaVoo)
     scanf("%d", (int *)&temp->status);
     getchar();
 
-    temp->link = *listaVoo;
-    *listaVoo = temp;
+    ptr atual = *listaVoo, anterior = NULL;
+    while (atual != NULL)
+    {
+        if (temp->horario.hora < atual->horario.hora || (temp->horario.hora == atual->horario.hora && temp->horario.minuto < atual->horario.minuto)){ break; }
+
+        anterior = atual;
+        atual = atual->link;
+    }
+
+    if (anterior == NULL){
+        temp->link = *listaVoo;
+        *listaVoo = temp;
+    }else{
+        temp->link = atual;
+        anterior->link = temp;
+    }
 
     printf("\nO voo %d foi adicionado\n\n", temp->numeroVoo);
 }
@@ -168,9 +182,37 @@ int alterar(ptr *listaVoo)
             break;
         case 5:
             printf("Digite a HORA do voo(ex: 21), aperte enter e, em seguida digite o minuto do voo(ex: 30): \n");
-            scanf("%d", &atual->horario.hora);
-            scanf("%d", &atual->horario.minuto);
+            int novaHora, novoMinuto;
+            scanf("%d", &novaHora);
+            scanf("%d", &novoMinuto);
             getchar();
+
+            if (*listaVoo == atual){
+                *listaVoo = atual->link;
+            }else{
+                ptr anterior = *listaVoo;
+                while (anterior->link != atual){
+                    anterior = anterior->link;
+                }
+                anterior->link = atual->link;
+            }
+            atual->horario.hora = novaHora;
+            atual->horario.minuto = novoMinuto;
+
+            ptr anterior = NULL, cursor = *listaVoo;
+            while (cursor != NULL){
+                if (atual->horario.hora < cursor->horario.hora || (atual->horario.hora == cursor->horario.hora && atual->horario.minuto < cursor->horario.minuto)){ break; }
+                anterior = cursor;
+                cursor = cursor->link;
+            }
+
+            if (anterior == NULL){
+                atual->link = *listaVoo;
+                *listaVoo = atual;
+            }else{
+                atual->link = cursor;
+                anterior->link = atual;
+            }
             break;
         case 0:
             printf("Saindo...\n");
