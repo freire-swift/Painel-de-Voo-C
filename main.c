@@ -24,8 +24,8 @@ typedef struct
 typedef struct Voo
 {
     int numeroVoo;
-    char companhia[21]; // 20 + 1 para '\0'
-    char destino[31];   // 30 + 1 para '\0'
+    char companhia[21];
+    char destino[31];  
     int portao;
     enum StatusVoo status;
     Horario horario;
@@ -74,7 +74,6 @@ void limparEntrada()
         ;
 }
 
-// Função auxiliar para verificar se a string contém acentuação
 int contemAcentuacao(const char *str)
 {
     for (int i = 0; str[i] != '\0'; i++)
