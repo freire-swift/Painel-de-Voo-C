@@ -24,8 +24,8 @@ typedef struct
 typedef struct Voo
 {
     int numeroVoo;
-    char companhia[100];
-    char destino[100];
+    char companhia[21]; // 20 + 1 para '\0'
+    char destino[31];   // 30 + 1 para '\0'
     int portao;
     enum StatusVoo status;
     Horario horario;
@@ -66,6 +66,57 @@ const char *statusParaString(enum StatusVoo status)
     }
 }
 
+// Função auxiliar para limpar o buffer do teclado
+void limparEntrada()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
+}
+
+// Função auxiliar para verificar se a string contém acentuação
+int contemAcentuacao(const char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        unsigned char c = (unsigned char)str[i];
+        if (c >= 128)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// Função auxiliar para ler string limitada e obrigar o usuário a digitar até o tamanho permitido
+void lerStringLimitada(char *dest, int max)
+{
+    int valido = 0;
+    while (!valido)
+    {
+        if (fgets(dest, max, stdin) != NULL)
+        {
+            removerNovaLinha(dest);
+            // Se o texto foi cortado, limpar o buffer e pedir novamente
+            if (strlen(dest) == max - 1 && dest[max - 2] != '\n')
+            {
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF)
+                    ;
+                printf("Atenção: o texto excedeu o limite de %d caracteres. Digite novamente:\n", max - 1);
+            }
+            else if (contemAcentuacao(dest))
+            {
+                printf("Atenção: não utilize acentuação. Digite novamente apenas com letras sem acento.\n");
+            }
+            else
+            {
+                valido = 1;
+            }
+        }
+    }
+}
+
 void inserir(ptr *listaVoo)
 {
     ptr temp = malloc(sizeof(struct Voo));
@@ -75,29 +126,58 @@ void inserir(ptr *listaVoo)
         return;
     }
 
-    printf("\n\nInsira o número do voo em 4 dígitos (ex: 1234): ");
-    scanf("%d", &temp->numeroVoo);
-    getchar();
+    int ok = 0;
+    do
+    {
+        printf("\n\nInsira o número do voo em 4 dígitos (ex: 1234): ");
+        ok = scanf("%d", &temp->numeroVoo);
+        limparEntrada();
+        if (ok != 1 || temp->numeroVoo < 1 || temp->numeroVoo > 9999)
+            printf("Valor inválido! Digite um número entre 1 e 9999.\n");
+    } while (ok != 1 || temp->numeroVoo < 1 || temp->numeroVoo > 9999);
 
-    printf("Insira a companhia aérea: ");
-    fgets(temp->companhia, sizeof(temp->companhia), stdin);
-    removerNovaLinha(temp->companhia);
+    printf("Insira a companhia aérea (máx. 20 caracteres): ");
+    lerStringLimitada(temp->companhia, sizeof(temp->companhia));
 
-    printf("Insira o destino do voo: ");
-    fgets(temp->destino, sizeof(temp->destino), stdin);
-    removerNovaLinha(temp->destino);
+    printf("Insira o destino do voo (máx. 30 caracteres): ");
+    lerStringLimitada(temp->destino, sizeof(temp->destino));
 
-    printf("Insira o portão do voo em 2 dígitos (ex: 12): ");
-    scanf("%d", &temp->portao);
+    do
+    {
+        printf("Insira o portão do voo em 2 dígitos (ex: 12): ");
+        ok = scanf("%d", &temp->portao);
+        limparEntrada();
+        if (ok != 1 || temp->portao < 1 || temp->portao > 99)
+            printf("Valor inválido! Digite um número entre 1 e 99.\n");
+    } while (ok != 1 || temp->portao < 1 || temp->portao > 99);
 
-    printf("Digite a HORA do voo (ex: 21), aperte Enter e, em seguida, digite o MINUTO do voo (ex: 30): \n");
-    scanf("%d", &temp->horario.hora);
-    scanf("%d", &temp->horario.minuto);
+    do
+    {
+        printf("Digite a HORA do voo (ex: 21): ");
+        ok = scanf("%d", &temp->horario.hora);
+        limparEntrada();
+        if (ok != 1 || temp->horario.hora < 0 || temp->horario.hora > 23)
+            printf("Valor inválido! Digite uma hora entre 0 e 23.\n");
+    } while (ok != 1 || temp->horario.hora < 0 || temp->horario.hora > 23);
 
-    printf("\nSeguindo o menu abaixo, insira o número referente ao status do voo: \n");
-    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
-    scanf("%d", (int *)&temp->status);
-    getchar();
+    do
+    {
+        printf("Digite o MINUTO do voo (ex: 30): ");
+        ok = scanf("%d", &temp->horario.minuto);
+        limparEntrada();
+        if (ok != 1 || temp->horario.minuto < 0 || temp->horario.minuto > 59)
+            printf("Valor inválido! Digite um minuto entre 0 e 59.\n");
+    } while (ok != 1 || temp->horario.minuto < 0 || temp->horario.minuto > 59);
+
+    do
+    {
+        printf("\nSeguindo o menu abaixo, insira o número referente ao status do voo: \n");
+        printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
+        ok = scanf("%d", (int *)&temp->status);
+        limparEntrada();
+        if (ok != 1 || temp->status < 1 || temp->status > 8)
+            printf("Valor inválido! Digite um número entre 1 e 8.\n");
+    } while (ok != 1 || temp->status < 1 || temp->status > 8);
 
     ptr atual = *listaVoo, anterior = NULL;
     while (atual != NULL)
@@ -133,9 +213,15 @@ int alterar(ptr *listaVoo)
         return -1;
     }
 
-    int vooSelecionado;
-    printf("Digite o número do voo a ser alterado:\n");
-    scanf("%d", &vooSelecionado);
+    int vooSelecionado, ok = 0;
+    do
+    {
+        printf("Digite o número do voo a ser alterado:\n");
+        ok = scanf("%d", &vooSelecionado);
+        limparEntrada();
+        if (ok != 1 || vooSelecionado < 1 || vooSelecionado > 9999)
+            printf("Valor inválido! Digite um número entre 1 e 9999.\n");
+    } while (ok != 1 || vooSelecionado < 1 || vooSelecionado > 9999);
 
     ptr atual = *listaVoo;
 
@@ -162,37 +248,60 @@ int alterar(ptr *listaVoo)
         printf("5 - Alterar horário do voo\n");
         printf("0 - Terminar alterações\n");
         printf("Escolha uma opção: ");
-        scanf("%d", &opcao);
-        getchar();
+        ok = scanf("%d", &opcao);
+        limparEntrada();
+        if (ok != 1)
+            opcao = -1;
 
         switch (opcao)
         {
         case 1:
-            printf("\n\nInsira o número do voo em 4 dígitos (ex: 1234): ");
-            scanf("%d", &atual->numeroVoo);
-            getchar();
+            do
+            {
+                printf("\n\nInsira o número do voo em 4 dígitos (ex: 1234): ");
+                ok = scanf("%d", &atual->numeroVoo);
+                limparEntrada();
+                if (ok != 1 || atual->numeroVoo < 1 || atual->numeroVoo > 9999)
+                    printf("Valor inválido! Digite um número entre 1 e 9999.\n");
+            } while (ok != 1 || atual->numeroVoo < 1 || atual->numeroVoo > 9999);
             break;
         case 2:
-            printf("Insira a companhia aérea: ");
-            fgets(atual->companhia, sizeof(atual->companhia), stdin);
-            removerNovaLinha(atual->companhia);
+            printf("Insira a companhia aérea (máx. 20 caracteres): ");
+            lerStringLimitada(atual->companhia, sizeof(atual->companhia));
             break;
         case 3:
-            printf("Insira o destino do voo: ");
-            fgets(atual->destino, sizeof(atual->destino), stdin);
-            removerNovaLinha(atual->destino);
+            printf("Insira o destino do voo (máx. 30 caracteres): ");
+            lerStringLimitada(atual->destino, sizeof(atual->destino));
             break;
         case 4:
-            printf("Insira o portão do voo em 2 dígitos (ex: 12): ");
-            scanf("%d", &atual->portao);
-            getchar();
+            do
+            {
+                printf("Insira o portão do voo em 2 dígitos (ex: 12): ");
+                ok = scanf("%d", &atual->portao);
+                limparEntrada();
+                if (ok != 1 || atual->portao < 1 || atual->portao > 99)
+                    printf("Valor inválido! Digite um número entre 1 e 99.\n");
+            } while (ok != 1 || atual->portao < 1 || atual->portao > 99);
             break;
         case 5:
-            printf("Digite a HORA do voo (ex: 21), aperte Enter e, em seguida, digite o MINUTO do voo (ex: 30): \n");
+        {
             int novaHora, novoMinuto;
-            scanf("%d", &novaHora);
-            scanf("%d", &novoMinuto);
-            getchar();
+            do
+            {
+                printf("Digite a HORA do voo (ex: 21): ");
+                ok = scanf("%d", &novaHora);
+                limparEntrada();
+                if (ok != 1 || novaHora < 0 || novaHora > 23)
+                    printf("Valor inválido! Digite uma hora entre 0 e 23.\n");
+            } while (ok != 1 || novaHora < 0 || novaHora > 23);
+            do
+            {
+                printf("Digite o MINUTO do voo (ex: 30): ");
+                ok = scanf("%d", &novoMinuto);
+                limparEntrada();
+                if (ok != 1 || novoMinuto < 0 || novoMinuto > 59)
+                    printf("Valor inválido! Digite um minuto entre 0 e 59.\n");
+            } while (ok != 1 || novoMinuto < 0 || novoMinuto > 59);
 
             if (*listaVoo == atual)
             {
@@ -232,6 +341,7 @@ int alterar(ptr *listaVoo)
                 anterior->link = atual;
             }
             break;
+        }
         case 0:
             printf("Saindo...\n");
             break;
@@ -252,9 +362,15 @@ int alterarStatus(ptr *listaVoo)
         return -1;
     }
 
-    int vooSelecionado;
-    printf("Digite o número do voo a ter o status alterado:\n");
-    scanf("%d", &vooSelecionado);
+    int vooSelecionado, ok = 0;
+    do
+    {
+        printf("Digite o número do voo a ter o status alterado:\n");
+        ok = scanf("%d", &vooSelecionado);
+        limparEntrada();
+        if (ok != 1 || vooSelecionado < 1 || vooSelecionado > 9999)
+            printf("Valor inválido! Digite um número entre 1 e 9999.\n");
+    } while (ok != 1 || vooSelecionado < 1 || vooSelecionado > 9999);
 
     ptr atual = *listaVoo;
 
@@ -269,10 +385,15 @@ int alterarStatus(ptr *listaVoo)
         return -1;
     }
 
-    printf("Seguindo o menu abaixo, insira o número referente ao status do voo: \n");
-    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
-    scanf("%d", (int *)&atual->status);
-    getchar();
+    do
+    {
+        printf("Seguindo o menu abaixo, insira o número referente ao status do voo: \n");
+        printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
+        ok = scanf("%d", (int *)&atual->status);
+        limparEntrada();
+        if (ok != 1 || atual->status < 1 || atual->status > 8)
+            printf("Valor inválido! Digite um número entre 1 e 8.\n");
+    } while (ok != 1 || atual->status < 1 || atual->status > 8);
 
     printf("O status do voo %d foi alterado.\n", vooSelecionado);
     return vooSelecionado;
@@ -286,9 +407,15 @@ int excluir(ptr *listaVoo)
         return -1;
     }
 
-    int vooSelecionado;
-    printf("Digite o número do voo a ser excluído:\n");
-    scanf("%d", &vooSelecionado);
+    int vooSelecionado, ok = 0;
+    do
+    {
+        printf("Digite o número do voo a ser excluído:\n");
+        ok = scanf("%d", &vooSelecionado);
+        limparEntrada();
+        if (ok != 1 || vooSelecionado < 1 || vooSelecionado > 9999)
+            printf("Valor inválido! Digite um número entre 1 e 9999.\n");
+    } while (ok != 1 || vooSelecionado < 1 || vooSelecionado > 9999);
 
     ptr atual = *listaVoo;
     ptr anterior = NULL;
@@ -321,34 +448,48 @@ int excluir(ptr *listaVoo)
 
 void exibir(ptr listaVoo)
 {
-    printf("\n\n--------------------------------------------------------------------------------------\n");
-    printf("=========================== PAINEL DE VOO AEROPORTO VMPERG ===========================\n");
-    printf("--------------------------------------------------------------------------------------\n");
-    printf("|  VOO  |     COMPANHIA     |         DESTINO         | PT |  HORA  |     STATUS     |\n");
-    printf("--------------------------------------------------------------------------------------\n");
+    printf("\n\n");
+    printf("================================================================================================\n");
+    printf("================================= PAINEL DE VOO AEROPORTO VMPERG ===============================\n");
+    printf("================================================================================================\n");
+    printf("|  VOO  |      COMPANHIA       |            DESTINO             | PT |  HORA  |     STATUS     |\n");
+    printf("------------------------------------------------------------------------------------------------\n");
 
     ptr temp = listaVoo;
     while (temp != NULL)
     {
-        printf("| %04d  | %-17s | %-23s | %02d | %02d:%02d  | %-14s |\n",
+        int comp_len = strlen(temp->companhia);
+        int dest_len = strlen(temp->destino);
+        int comp_pad_left = (22 - comp_len) / 2;
+        int comp_pad_right = 22 - comp_len - comp_pad_left;
+        int dest_pad_left = (32 - dest_len) / 2;
+        int dest_pad_right = 32 - dest_len - dest_pad_left;
+
+        // Centraliza o status
+        const char *status = statusParaString(temp->status);
+        int status_len = strlen(status);
+        int status_pad_left = (16 - status_len) / 2;
+        int status_pad_right = 16 - status_len - status_pad_left;
+
+        printf("| %4d  |%*s%-*s%*s|%*s%-*s%*s| %2d | %02d:%02d  |%*s%-*s%*s|\n",
                temp->numeroVoo,
-               temp->companhia,
-               temp->destino,
+               comp_pad_left, "", comp_len, temp->companhia, comp_pad_right, "",
+               dest_pad_left, "", dest_len, temp->destino, dest_pad_right, "",
                temp->portao,
                temp->horario.hora,
                temp->horario.minuto,
-               statusParaString(temp->status));
+               status_pad_left, "", status_len, status, status_pad_right, "");
         temp = temp->link;
     }
 
-    printf("======================================================================================\n");
+    printf("================================================================================================\n");
 }
 
 int main()
 {
     setlocale(LC_ALL, "pt_BR.UTF-8");
     ptr listaVoo = NULL;
-    int opcao;
+    int opcao, ok = 0;
 
     do
     {
@@ -360,8 +501,10 @@ int main()
         printf("5 - Exibir painel\n");
         printf("0 - Sair\n");
         printf("Escolha uma opção: ");
-        scanf("%d", &opcao);
-        getchar();
+        ok = scanf("%d", &opcao);
+        limparEntrada();
+        if (ok != 1)
+            opcao = -1;
 
         switch (opcao)
         {
