@@ -148,13 +148,13 @@ int alterar(ptr *listaVoo)
     do
     {
         printf("\nAlteracao - Menu\n");
-        printf("1 - Alterar n° do voo\n");
+        printf("1 - Alterar numero do voo\n");
         printf("2 - Alterar companhia do voo\n");
         printf("3 - Alterar destino do voo\n");
         printf("4 - Alterar portao do voo\n");
         printf("5 - Alterar horario do voo\n");
         printf("0 - Terminar alteracoes\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -218,7 +218,7 @@ int alterar(ptr *listaVoo)
             printf("Saindo...\n");
             break;
         default:
-            printf("Opção invalida!\n");
+            printf("Opcao invalida!\n");
         }
     } while (opcao != 0);
 
@@ -230,7 +230,7 @@ int alterarStatus(ptr *listaVoo)
 {
     if (*listaVoo == NULL)
     {
-        printf("A lista esta vazia, nao eh possivel alterar o status de um voo");
+        printf("A lista esta vazia, nao e possivel alterar o status de um voo");
         return -1;
     }
 
@@ -365,7 +365,7 @@ int main()
             printf("Saindo...\n");
             break;
         default:
-            printf("Opção invalida!\n");
+            printf("Opcao invalida!\n");
         }
     } while (opcao != 0);
 
