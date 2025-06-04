@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 
 enum StatusVoo
 {
@@ -70,15 +71,15 @@ void inserir(ptr *listaVoo)
     ptr temp = malloc(sizeof(struct Voo));
     if (!temp)
     {
-        printf("Erro de alocacao de memoria.\n");
+        printf("Erro de alocação de memória.\n");
         return;
     }
 
-    printf("\n\nInsira o numero do voo em 4 casas (ex: 1234): ");
+    printf("\n\nInsira o número do voo em 4 dígitos (ex: 1234): ");
     scanf("%d", &temp->numeroVoo);
     getchar();
 
-    printf("Insira a companhia aerea: ");
+    printf("Insira a companhia aérea: ");
     fgets(temp->companhia, sizeof(temp->companhia), stdin);
     removerNovaLinha(temp->companhia);
 
@@ -86,48 +87,54 @@ void inserir(ptr *listaVoo)
     fgets(temp->destino, sizeof(temp->destino), stdin);
     removerNovaLinha(temp->destino);
 
-    printf("Insira o portao do voo em 2 casas (ex: 12): ");
+    printf("Insira o portão do voo em 2 dígitos (ex: 12): ");
     scanf("%d", &temp->portao);
 
-    printf("Digite a HORA do voo(ex: 21), aperte enter e, em seguida digite o minuto do voo(ex: 30): \n");
+    printf("Digite a HORA do voo (ex: 21), aperte Enter e, em seguida, digite o MINUTO do voo (ex: 30): \n");
     scanf("%d", &temp->horario.hora);
     scanf("%d", &temp->horario.minuto);
 
-    printf("Seguindo o menu abaixo, insira o numero referente ao status do voo: \n");
-    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Ultima chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
+    printf("\nSeguindo o menu abaixo, insira o número referente ao status do voo: \n");
+    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
     scanf("%d", (int *)&temp->status);
     getchar();
 
     ptr atual = *listaVoo, anterior = NULL;
     while (atual != NULL)
     {
-        if (temp->horario.hora < atual->horario.hora || (temp->horario.hora == atual->horario.hora && temp->horario.minuto < atual->horario.minuto)){ break; }
+        if (temp->horario.hora < atual->horario.hora || (temp->horario.hora == atual->horario.hora && temp->horario.minuto < atual->horario.minuto))
+        {
+            break;
+        }
 
         anterior = atual;
         atual = atual->link;
     }
 
-    if (anterior == NULL){
+    if (anterior == NULL)
+    {
         temp->link = *listaVoo;
         *listaVoo = temp;
-    }else{
+    }
+    else
+    {
         temp->link = atual;
         anterior->link = temp;
     }
 
-    printf("\nO voo %d foi adicionado\n\n", temp->numeroVoo);
+    printf("\nO voo %d foi adicionado.\n\n", temp->numeroVoo);
 }
 
 int alterar(ptr *listaVoo)
 {
     if (*listaVoo == NULL)
     {
-        printf("A lista esta vazia, nao e possivel alterar um voo");
+        printf("A lista está vazia, não é possível alterar um voo.\n");
         return -1;
     }
 
     int vooSelecionado;
-    printf("Digite o numero do voo a ser alterado\n");
+    printf("Digite o número do voo a ser alterado:\n");
     scanf("%d", &vooSelecionado);
 
     ptr atual = *listaVoo;
@@ -139,7 +146,7 @@ int alterar(ptr *listaVoo)
 
     if (atual == NULL)
     {
-        printf("Voo nao encontrado.\n");
+        printf("Voo não encontrado.\n");
         return -1;
     }
 
@@ -147,26 +154,26 @@ int alterar(ptr *listaVoo)
 
     do
     {
-        printf("\nAlteracao - Menu\n");
-        printf("1 - Alterar numero do voo\n");
+        printf("\nAlteração - Menu\n");
+        printf("1 - Alterar número do voo\n");
         printf("2 - Alterar companhia do voo\n");
         printf("3 - Alterar destino do voo\n");
-        printf("4 - Alterar portao do voo\n");
-        printf("5 - Alterar horario do voo\n");
-        printf("0 - Terminar alteracoes\n");
-        printf("Escolha uma opcao: ");
+        printf("4 - Alterar portão do voo\n");
+        printf("5 - Alterar horário do voo\n");
+        printf("0 - Terminar alterações\n");
+        printf("Escolha uma opção: ");
         scanf("%d", &opcao);
         getchar();
 
         switch (opcao)
         {
         case 1:
-            printf("\n\nInsira o numero do voo em 4 casas (ex: 1234): ");
+            printf("\n\nInsira o número do voo em 4 dígitos (ex: 1234): ");
             scanf("%d", &atual->numeroVoo);
             getchar();
             break;
         case 2:
-            printf("Insira a companhia aerea: ");
+            printf("Insira a companhia aérea: ");
             fgets(atual->companhia, sizeof(atual->companhia), stdin);
             removerNovaLinha(atual->companhia);
             break;
@@ -176,22 +183,26 @@ int alterar(ptr *listaVoo)
             removerNovaLinha(atual->destino);
             break;
         case 4:
-            printf("Insira o portao do voo em 2 casas (ex: 12): ");
+            printf("Insira o portão do voo em 2 dígitos (ex: 12): ");
             scanf("%d", &atual->portao);
             getchar();
             break;
         case 5:
-            printf("Digite a HORA do voo(ex: 21), aperte enter e, em seguida digite o minuto do voo(ex: 30): \n");
+            printf("Digite a HORA do voo (ex: 21), aperte Enter e, em seguida, digite o MINUTO do voo (ex: 30): \n");
             int novaHora, novoMinuto;
             scanf("%d", &novaHora);
             scanf("%d", &novoMinuto);
             getchar();
 
-            if (*listaVoo == atual){
+            if (*listaVoo == atual)
+            {
                 *listaVoo = atual->link;
-            }else{
+            }
+            else
+            {
                 ptr anterior = *listaVoo;
-                while (anterior->link != atual){
+                while (anterior->link != atual)
+                {
                     anterior = anterior->link;
                 }
                 anterior->link = atual->link;
@@ -200,16 +211,23 @@ int alterar(ptr *listaVoo)
             atual->horario.minuto = novoMinuto;
 
             ptr anterior = NULL, cursor = *listaVoo;
-            while (cursor != NULL){
-                if (atual->horario.hora < cursor->horario.hora || (atual->horario.hora == cursor->horario.hora && atual->horario.minuto < cursor->horario.minuto)){ break; }
+            while (cursor != NULL)
+            {
+                if (atual->horario.hora < cursor->horario.hora || (atual->horario.hora == cursor->horario.hora && atual->horario.minuto < cursor->horario.minuto))
+                {
+                    break;
+                }
                 anterior = cursor;
                 cursor = cursor->link;
             }
 
-            if (anterior == NULL){
+            if (anterior == NULL)
+            {
                 atual->link = *listaVoo;
                 *listaVoo = atual;
-            }else{
+            }
+            else
+            {
                 atual->link = cursor;
                 anterior->link = atual;
             }
@@ -218,11 +236,11 @@ int alterar(ptr *listaVoo)
             printf("Saindo...\n");
             break;
         default:
-            printf("Opcao invalida!\n");
+            printf("Opção inválida!\n");
         }
     } while (opcao != 0);
 
-    printf("O voo %d foi alterado\n", vooSelecionado);
+    printf("O voo %d foi alterado.\n", vooSelecionado);
     return vooSelecionado;
 }
 
@@ -230,12 +248,12 @@ int alterarStatus(ptr *listaVoo)
 {
     if (*listaVoo == NULL)
     {
-        printf("A lista esta vazia, nao e possivel alterar o status de um voo");
+        printf("A lista está vazia, não é possível alterar o status de um voo.\n");
         return -1;
     }
 
     int vooSelecionado;
-    printf("Digite o numero do voo a ser alterado o status\n");
+    printf("Digite o número do voo a ter o status alterado:\n");
     scanf("%d", &vooSelecionado);
 
     ptr atual = *listaVoo;
@@ -247,16 +265,16 @@ int alterarStatus(ptr *listaVoo)
 
     if (atual == NULL)
     {
-        printf("Voo nao encontrado.\n");
+        printf("Voo não encontrado.\n");
         return -1;
     }
 
-    printf("Seguindo o menu abaixo, insira o numero referente ao status do voo: \n");
-    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Ultima chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
+    printf("Seguindo o menu abaixo, insira o número referente ao status do voo: \n");
+    printf("1 - Estimado\n2 - Confirmado\n3 - Embarcando\n4 - Última chamada\n5 - Decolado\n6 - Encerrado\n7 - Atrasado\n8 - Cancelado\n");
     scanf("%d", (int *)&atual->status);
     getchar();
 
-    printf("O status do voo %d foi alterado\n", vooSelecionado);
+    printf("O status do voo %d foi alterado.\n", vooSelecionado);
     return vooSelecionado;
 }
 
@@ -264,12 +282,12 @@ int excluir(ptr *listaVoo)
 {
     if (*listaVoo == NULL)
     {
-        printf("A lista esta vazia, nao eh possivel excluir um voo");
+        printf("A lista está vazia, não é possível excluir um voo.\n");
         return -1;
     }
 
     int vooSelecionado;
-    printf("Digite o numero do voo a ser excluido\n");
+    printf("Digite o número do voo a ser excluído:\n");
     scanf("%d", &vooSelecionado);
 
     ptr atual = *listaVoo;
@@ -283,7 +301,7 @@ int excluir(ptr *listaVoo)
 
     if (atual == NULL)
     {
-        printf("Voo nao encontrado.\n");
+        printf("Voo não encontrado.\n");
         return -1;
     }
 
@@ -297,7 +315,7 @@ int excluir(ptr *listaVoo)
     }
 
     free(atual);
-    printf("O voo %d foi removido\n", vooSelecionado);
+    printf("O voo %d foi removido.\n", vooSelecionado);
     return vooSelecionado;
 }
 
@@ -328,6 +346,7 @@ void exibir(ptr listaVoo)
 
 int main()
 {
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     ptr listaVoo = NULL;
     int opcao;
 
@@ -340,7 +359,7 @@ int main()
         printf("4 - Excluir voo\n");
         printf("5 - Exibir painel\n");
         printf("0 - Sair\n");
-        printf("Escolha uma opcao: ");
+        printf("Escolha uma opção: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -365,7 +384,7 @@ int main()
             printf("Saindo...\n");
             break;
         default:
-            printf("Opcao invalida!\n");
+            printf("Opção inválida!\n");
         }
     } while (opcao != 0);
 
