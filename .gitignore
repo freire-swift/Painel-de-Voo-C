@@ -1,0 +1,11 @@
+build/
+output/
+.vscode
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+*.dSYM/
